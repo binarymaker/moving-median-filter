@@ -44,7 +44,7 @@ index +-->+                 DEMUX                 |
 
 # Code usage
 
-```
+```c
 /* Include library */
 #include "moving-median.h"
 
@@ -89,3 +89,8 @@ void main()
 ![alt text](image/Capture1.png "Filter response")
 
 ![alt text](image/Capture2.png "Filter performance")
+
+# Refer other filters
+
+  + [Average filter](https://github.com/binarymaker/moving-average-filter)
+  + [FIR filter](https://github.com/binarymaker/fir-filter)
