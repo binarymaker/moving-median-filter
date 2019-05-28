@@ -31,7 +31,38 @@
  */
 
 /* 
-
+                           input
+                             +
+                             |
+                          +--+--+
+                          | S/H | <-----------------+ sampling time
+                          +--+--+
+                             |
+                             v
+          +------------------+--------------------+
+index +-->+                 DEMUX                 |
+          +----+------+------+----------------+---+
+               |      |      |                |
+            +--+-+ +--+-+ +--+-+           +--+-+
+            | B0 | | B1 | | B3 | . . . . . | Bn |   <+ buffer
+            +-+--+ +-+--+ +-+--+           +-+--+      n is size+1
+              |      |      |                |
+          +---+------+------+----------------+----+
+          |                 SORT                  |
+          +----+------+------+----------------+---+
+               |      |      |                |
+            +--+-+ +--+-+ +--+-+           +--+-+
+            | S0 | | S1 | | S2 | . . . . . | Sn |    <+ sorted list
+            +-+--+ +-+--+ +-+--+           +-+--+
+              |      |      |                |
+              +------+------++---------------+
+                             |
+                    +--------+--------+
+                    |  Fill index / 2 |               <+ list
+                    +--------+--------+                  med value
+                             |
+                             v
+                          filtered
  */
 
 #include "stdint.h"
@@ -51,7 +82,8 @@ typedef struct movingMedian_s
  * @brief filter object initialization
  * 
  * @param context [in] instance of filter object
- * @param filter_size [in] size of filter buffer
+ * @param filter_size [in] size of filter buffer 
+ *                         Odd size acceptable, Even size internally convert to odd
  * @param sample_time [in] filter sampling time in ms 
  */
 void moving_median_create(movingMedian_t *context, uint16_t filter_size, uint16_t sample_time);

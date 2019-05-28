@@ -50,6 +50,8 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 movingMedian_t med_filter;
+movingMedian_t med_filter_2;
+movingMedian_t med_filter_3;
 
 uint16_t signal;
 uint16_t error_signal;
@@ -101,7 +103,9 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  moving_median_create(&med_filter, 10, 100);
+  moving_median_create(&med_filter, 9, 100);
+  moving_median_create(&med_filter_2, 29, 100);
+  moving_median_create(&med_filter_3, 49, 100);
 
   HAL_Delay(100);
   /* USER CODE END 2 */
@@ -126,11 +130,14 @@ int main(void)
 
     /* Filter --------------------------------*/
     moving_median_filter(&med_filter, error_signal);
+    moving_median_filter(&med_filter_2, error_signal);
+    moving_median_filter(&med_filter_3, error_signal);
 
     if (HAL_GetTick() - last_print > 100)
     {
       /* print filter values -------------------*/
-      printf("$%d %d;", error_signal, med_filter.filtered);
+      printf("$%d %d %d %d;", error_signal, med_filter.filtered,
+             med_filter_2.filtered, med_filter_3.filtered);
 
       last_print = HAL_GetTick();
     }

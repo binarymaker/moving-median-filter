@@ -50,7 +50,6 @@ moving_median_create(movingMedian_t *context,
   {
     context->size = filter_size;
   }
-    
 
   context->buffer = (int16_t*)malloc(filter_size * sizeof(int16_t));
   context->index = 0;
@@ -67,21 +66,25 @@ moving_median_filter(movingMedian_t *context,
   if ((TICK_TIMER - context->last_time) > context->sample_time)
   {
     context->last_time = TICK_TIMER;
-    
+
+    /* buffer filling */
     if (context->fill < context->size)
     {
       context->fill++;
     }
-    
+
     int16_t *sort_buffer = (int16_t*)malloc(context->fill * sizeof(uint16_t));
 
+    /* Replace old data by new */
     context->buffer[context->index] = filter_input;
 
+    /* Copy buffer to temp sort buffer */
     for (uint16_t i = 0; i < context->fill; i++)
     {
       sort_buffer[i] = context->buffer[i];
     }
 
+    /* Sort temporary buffer */
     for (uint16_t i = 0; i < context->fill; i++)
     {
       for (uint16_t j = i + 1; j < context->fill; j++)
@@ -93,14 +96,17 @@ moving_median_filter(movingMedian_t *context,
       }
     }
 
+    /* Increment buffer index */
     context->index++;
     if (context->index >= context->size)
     {
       context->index = 0;
     }
 
+    /* sorted buffer med value */
     context->filtered = sort_buffer[(uint16_t)(context->fill / 2)];
 
+    /* Delete temporary sort buffer */
     free(sort_buffer);
   }
 }
