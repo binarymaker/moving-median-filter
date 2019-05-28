@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 #include "stm32f0xx_hal.h"
-int16_t aa = 11, bb = 22;
+
 void
 swap(int16_t * a, int16_t* b)
 {
@@ -46,6 +46,11 @@ moving_median_create(movingMedian_t *context,
   {
     context->size = filter_size - 1;
   }
+  else
+  {
+    context->size = filter_size;
+  }
+    
 
   context->buffer = (int16_t*)malloc(filter_size * sizeof(int16_t));
   context->index = 0;
@@ -61,20 +66,25 @@ moving_median_filter(movingMedian_t *context,
 {
   if ((TICK_TIMER - context->last_time) > context->sample_time)
   {
-    int16_t *sort_buffer = (int16_t*)malloc(context->size * sizeof(uint16_t));
-
     context->last_time = TICK_TIMER;
+    
+    if (context->fill < context->size)
+    {
+      context->fill++;
+    }
+    
+    int16_t *sort_buffer = (int16_t*)malloc(context->fill * sizeof(uint16_t));
 
     context->buffer[context->index] = filter_input;
 
-    for (uint16_t i = 0; i < context->size; i++)
+    for (uint16_t i = 0; i < context->fill; i++)
     {
       sort_buffer[i] = context->buffer[i];
     }
 
-    for (uint16_t i = 0; i < context->size; i++)
+    for (uint16_t i = 0; i < context->fill; i++)
     {
-      for (uint16_t j = i + 1; j < context->size; j++)
+      for (uint16_t j = i + 1; j < context->fill; j++)
       {
         if (sort_buffer[j] < sort_buffer[i])
         {
@@ -89,8 +99,7 @@ moving_median_filter(movingMedian_t *context,
       context->index = 0;
     }
 
-
-    context->filtered = sort_buffer[(context->size / 2)];
+    context->filtered = sort_buffer[(uint16_t)(context->fill / 2)];
 
     free(sort_buffer);
   }

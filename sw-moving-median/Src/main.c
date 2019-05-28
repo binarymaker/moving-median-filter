@@ -101,7 +101,7 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  moving_median_create(&med_filter, 20, 100);
+  moving_median_create(&med_filter, 10, 100);
 
   HAL_Delay(100);
   /* USER CODE END 2 */
